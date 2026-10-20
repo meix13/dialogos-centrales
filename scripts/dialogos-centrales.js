@@ -8,7 +8,9 @@ const MODULE_ID = "dialogos-centrales";
 const SOCKET_NAME = `module.${MODULE_ID}`;
 
 const DEFAULT_CONFIG = {
-    enabled: true,
+    enabled: false,         // Desactivado por defecto al instalar el módulo
+    showFrame: true,        // Mostrar u ocultar el marco alrededor de la imagen
+    showName: true,         // Mostrar u ocultar la placa con el nombre del PJ
     includeGM: false,
     gmActorId: "__TOKEN__", // "__TOKEN__" | "__AVATAR__" | actorId específico
     avatarSize: 115,        // px (pequeño/mediano por defecto)
@@ -27,6 +29,8 @@ function getConfig() {
     const raw = game.settings.get(MODULE_ID, "config") || {};
     return {
         enabled: raw.enabled !== undefined ? Boolean(raw.enabled) : DEFAULT_CONFIG.enabled,
+        showFrame: raw.showFrame !== undefined ? Boolean(raw.showFrame) : DEFAULT_CONFIG.showFrame,
+        showName: raw.showName !== undefined ? Boolean(raw.showName) : DEFAULT_CONFIG.showName,
         includeGM: Boolean(raw.includeGM),
         gmActorId: raw.gmActorId || DEFAULT_CONFIG.gmActorId,
         avatarSize: Number(raw.avatarSize) || DEFAULT_CONFIG.avatarSize,
@@ -144,6 +148,8 @@ function ensureStageElement() {
         stage.style.setProperty("--dc-avatar-size", `${conf.avatarSize}px`);
         stage.style.setProperty("--dc-pos-x", `${conf.posX}%`);
         stage.style.setProperty("--dc-pos-y", `${conf.posY}%`);
+        stage.classList.toggle("dc-no-frame", !conf.showFrame);
+        stage.classList.toggle("dc-no-name", !conf.showName);
     }
     return stage;
 }
@@ -154,6 +160,8 @@ function applyStageConfigStyles() {
     stage.style.setProperty("--dc-avatar-size", `${conf.avatarSize}px`);
     stage.style.setProperty("--dc-pos-x", `${conf.posX}%`);
     stage.style.setProperty("--dc-pos-y", `${conf.posY}%`);
+    stage.classList.toggle("dc-no-frame", !conf.showFrame);
+    stage.classList.toggle("dc-no-name", !conf.showName);
 
     if (!conf.enabled) {
         clearAllSpeakers();
@@ -447,18 +455,28 @@ function renderGmModal(backdrop) {
                     </div>
                 </div>
 
-                <!-- 3. Tamaño y Posición en Pantalla -->
+                <!-- 3. Tamaño, Estilo y Posición en Pantalla -->
                 <div class="dc-gm-card">
                     <div class="dc-gm-card-title">
-                        <span><i class="fa-solid fa-sliders"></i> TAMAÑO Y POSICIÓN EN ESCENA</span>
+                        <span><i class="fa-solid fa-sliders"></i> ESTILO, TAMAÑO Y POSICIÓN</span>
                         <button type="button" class="dc-btn" id="dc-reset-defaults-btn" style="padding:2px 8px; font-size:11px;">
                             Restaurar por defecto
                         </button>
                     </div>
 
                     <div class="dc-gm-field">
+                        <label for="dc-show-frame-cb" style="cursor:pointer;">Mostrar marco alrededor del retrato (desmarcar para PNG transparente)</label>
+                        <input type="checkbox" id="dc-show-frame-cb" ${conf.showFrame ? "checked" : ""} />
+                    </div>
+
+                    <div class="dc-gm-field">
+                        <label for="dc-show-name-cb" style="cursor:pointer;">Mostrar etiqueta con el nombre del PJ debajo</label>
+                        <input type="checkbox" id="dc-show-name-cb" ${conf.showName ? "checked" : ""} />
+                    </div>
+
+                    <div class="dc-gm-field">
                         <label>Tamaño de Retrato: <strong id="dc-val-size" style="color:#38bdf8;">${conf.avatarSize}px</strong></label>
-                        <input type="range" id="dc-slider-size" min="70" max="220" step="5" value="${conf.avatarSize}" style="width:200px;" />
+                        <input type="range" id="dc-slider-size" min="70" max="240" step="5" value="${conf.avatarSize}" style="width:200px;" />
                     </div>
 
                     <div class="dc-gm-field">
@@ -507,6 +525,18 @@ function renderGmModal(backdrop) {
     backdrop.querySelector("#dc-gm-actor-select")?.addEventListener("change", async (ev) => {
         const c = getConfig();
         c.gmActorId = ev.target.value;
+        await saveConfig(c);
+    });
+
+    backdrop.querySelector("#dc-show-frame-cb")?.addEventListener("change", async (ev) => {
+        const c = getConfig();
+        c.showFrame = ev.target.checked;
+        await saveConfig(c);
+    });
+
+    backdrop.querySelector("#dc-show-name-cb")?.addEventListener("change", async (ev) => {
+        const c = getConfig();
+        c.showName = ev.target.checked;
         await saveConfig(c);
     });
 

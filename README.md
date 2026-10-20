@@ -12,3 +12,4 @@ Módulo para **Foundry VTT (v12 / v13 / v14)** que muestra automáticamente en l
   - Icono de bocadillo (`💬`) en la barra izquierda (Controles de Tokens).
   - Botón `Diálogos Centrales` en la cabecera de la pestaña *Escenas*.
   - Atajo de teclado `Alt + D`.
+

@@ -82,6 +82,36 @@
     display: block;
 }
 
+/* Modo sin marco (para retratos PNG con fondo transparente) */
+#dc-speakers-stage.dc-no-frame .dc-portrait-frame {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    animation: dc-speaking-pulse-frameless 1.6s ease-in-out infinite;
+}
+
+#dc-speakers-stage.dc-no-frame .dc-portrait-img {
+    object-fit: contain !important;
+    object-position: bottom center !important;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 8px var(--dc-user-glow, rgba(56, 189, 248, 0.35)));
+}
+
+@keyframes dc-speaking-pulse-frameless {
+    0%, 100% {
+        transform: translateY(0px) scale(1);
+    }
+    50% {
+        transform: translateY(-4px) scale(1.02);
+    }
+}
+
+/* Ocultar placa de nombre si se desmarca */
+#dc-speakers-stage.dc-no-name .dc-name-plate {
+    display: none !important;
+}
+
 /* Bocadillo de diálogo con puntos en movimiento */
 .dc-speech-bubble {
     position: absolute;
@@ -293,3 +323,4 @@
     color: #fecaca;
     font-weight: bold;
 }
+
