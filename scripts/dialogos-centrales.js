@@ -140,15 +140,16 @@ function ensureStageElement() {
         stage = document.createElement("div");
         stage.id = "dc-speakers-stage";
         document.body.appendChild(stage);
+        const conf = getConfig();
+        stage.style.setProperty("--dc-avatar-size", `${conf.avatarSize}px`);
+        stage.style.setProperty("--dc-pos-x", `${conf.posX}%`);
+        stage.style.setProperty("--dc-pos-y", `${conf.posY}%`);
     }
-    applyStageConfigStyles(stage);
     return stage;
 }
 
-function applyStageConfigStyles(stage = null) {
-    if (!stage) stage = document.getElementById("dc-speakers-stage");
-    if (!stage) return;
-
+function applyStageConfigStyles() {
+    const stage = ensureStageElement();
     const conf = getConfig();
     stage.style.setProperty("--dc-avatar-size", `${conf.avatarSize}px`);
     stage.style.setProperty("--dc-pos-x", `${conf.posX}%`);
@@ -668,3 +669,4 @@ Hooks.once("ready", () => {
         });
     }
 });
+
