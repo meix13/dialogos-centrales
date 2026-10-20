@@ -1,0 +1,295 @@
+/* ==========================================================================
+   Diálogos Centrales - Retratos por Voz (Foundry VTT v12-v14)
+   ========================================================================== */
+
+/* 1. Contenedor principal de retratos hablantes en pantalla */
+#dc-speakers-stage {
+    position: fixed;
+    left: var(--dc-pos-x, 50%);
+    bottom: var(--dc-pos-y, 12%);
+    transform: translateX(-50%);
+    z-index: 60;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 24px;
+    pointer-events: none;
+    user-select: none;
+    transition: left 0.25s ease, bottom 0.25s ease;
+}
+
+/* Tarjeta individual de cada hablante */
+.dc-speaker-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: var(--dc-avatar-size, 115px);
+    opacity: 0;
+    transform: translateY(18px) scale(0.88);
+    transition:
+        opacity 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+        width 0.2s ease,
+        margin 0.24s ease;
+}
+
+.dc-speaker-card.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.dc-speaker-card.is-leaving {
+    opacity: 0;
+    transform: translateY(14px) scale(0.85);
+}
+
+/* Marco de la imagen del PJ / PNJ */
+.dc-portrait-frame {
+    width: var(--dc-avatar-size, 115px);
+    height: var(--dc-avatar-size, 115px);
+    border-radius: 14px;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
+    border: 2.5px solid var(--dc-user-color, #38bdf8);
+    box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.85),
+        0 0 18px var(--dc-user-glow, rgba(56, 189, 248, 0.55));
+    position: relative;
+    animation: dc-speaking-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes dc-speaking-pulse {
+    0%, 100% {
+        transform: translateY(0px);
+        box-shadow:
+            0 10px 28px rgba(0, 0, 0, 0.85),
+            0 0 14px var(--dc-user-glow, rgba(56, 189, 248, 0.45));
+    }
+    50% {
+        transform: translateY(-4px);
+        box-shadow:
+            0 14px 32px rgba(0, 0, 0, 0.9),
+            0 0 24px var(--dc-user-glow, rgba(56, 189, 248, 0.8));
+    }
+}
+
+.dc-portrait-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+}
+
+/* Bocadillo de diálogo con puntos en movimiento */
+.dc-speech-bubble {
+    position: absolute;
+    top: -16px;
+    right: -14px;
+    z-index: 3;
+    background: #f8fafc;
+    border: 2px solid #0f172a;
+    border-radius: 18px;
+    padding: 6px 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.65);
+    animation: dc-bubble-float 1.8s ease-in-out infinite;
+}
+
+/* Pico inferior del bocadillo apuntando al retrato */
+.dc-speech-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -7px;
+    left: 12px;
+    width: 10px;
+    height: 10px;
+    background: #f8fafc;
+    border-right: 2px solid #0f172a;
+    border-bottom: 2px solid #0f172a;
+    transform: rotate(45deg);
+}
+
+@keyframes dc-bubble-float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-3px) scale(1.04); }
+}
+
+.dc-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #0f172a;
+    display: inline-block;
+    animation: dc-dot-bounce 1.2s infinite ease-in-out both;
+}
+
+.dc-dot:nth-child(1) { animation-delay: -0.32s; }
+.dc-dot:nth-child(2) { animation-delay: -0.16s; }
+.dc-dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes dc-dot-bounce {
+    0%, 80%, 100% {
+        transform: translateY(0) scale(0.75);
+        opacity: 0.45;
+    }
+    40% {
+        transform: translateY(-4px) scale(1.15);
+        opacity: 1;
+    }
+}
+
+/* Placa con el nombre del PJ / PNJ */
+.dc-name-plate {
+    margin-top: -8px;
+    z-index: 2;
+    background: rgba(9, 13, 24, 0.94);
+    border: 1px solid var(--dc-user-color, #38bdf8);
+    color: #f8fafc;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-align: center;
+    max-width: calc(var(--dc-avatar-size, 115px) + 30px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.85);
+}
+
+/* ==========================================================================
+   2. Panel de Configuración del Máster
+   ========================================================================== */
+
+.dc-gm-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 105;
+    background: rgba(2, 4, 8, 0.65);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dc-gm-modal {
+    background: #0b1120;
+    border: 1px solid #38bdf8;
+    border-radius: 10px;
+    width: 540px;
+    max-width: 94vw;
+    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.85), 0 0 25px rgba(56, 189, 248, 0.2);
+    overflow: hidden;
+}
+
+.dc-gm-header {
+    background: #0f172a;
+    padding: 12px 18px;
+    border-bottom: 1px solid #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dc-gm-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #38bdf8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.5px;
+}
+
+.dc-gm-body {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.dc-gm-card {
+    background: #060913;
+    border: 1px solid #1e293b;
+    border-radius: 7px;
+    padding: 12px 14px;
+}
+
+.dc-gm-card-title {
+    font-family: monospace;
+    font-size: 12px;
+    color: #38bdf8;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dc-gm-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.dc-gm-field:last-child {
+    margin-bottom: 0;
+}
+
+.dc-gm-select,
+.dc-gm-input {
+    background: #0b1120 !important;
+    border: 1px solid #334155 !important;
+    color: #f8fafc !important;
+    border-radius: 5px !important;
+    padding: 5px 8px !important;
+    font-size: 12px !important;
+    height: 30px !important;
+}
+
+.dc-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.dc-btn:hover {
+    background: #334155;
+    border-color: #38bdf8;
+    color: #fff;
+}
+
+.dc-btn-success {
+    background: #059669;
+    border-color: #10b981;
+    color: #fff;
+    font-weight: bold;
+}
+
+.dc-btn-danger {
+    background: #7f1d1d;
+    border-color: #ef4444;
+    color: #fecaca;
+    font-weight: bold;
+}

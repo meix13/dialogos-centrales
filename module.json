@@ -1,0 +1,25 @@
+{
+  "id": "dialogos-centrales",
+  "title": "Diálogos Centrales - Retratos por Voz",
+  "description": "Muestra automáticamente en la zona inferior/central de la escena el retrato del PJ (o PNJ elegido por el Máster) con un bocadillo animado cuando un jugador habla por voz (compatible con LiveKit y WebRTC nativo).",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "12",
+    "verified": "14.369",
+    "maximum": "14"
+  },
+  "authors": [
+    {
+      "name": "Miguel Ángel Lucas"
+    }
+  ],
+  "esmodules": [
+    "scripts/dialogos-centrales.js"
+  ],
+  "styles": [
+    "styles/dialogos-centrales.css"
+  ],
+  "socket": true,
+  "url": "https://github.com/meix13/dialogos-centrales",
+  "manifest": "https://raw.githubusercontent.com/meix13/dialogos-centrales/main/module.json"
+}
